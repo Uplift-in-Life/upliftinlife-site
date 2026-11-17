@@ -5,11 +5,13 @@ Run `python3 build.py`; it writes HTML into docs/ (served by GitHub Pages).
 Languages: de (root), en, bg. Texts live in T below.
 """
 import html, os
+from texts_i18n import T_EXTRA
 
 DOMAIN = "https://upliftinlife.com"
-LANGS = ["de", "en", "bg"]
-LANG_NAME = {"de": "Deutsch", "en": "English", "bg": "Български"}
-PREFIX = {"de": "", "en": "en/", "bg": "bg/"}
+LANGS = ["de", "en", "bg", "es", "fr", "it", "pl", "nl", "ro", "el", "ru", "uk", "tr", "sr"]
+LANG_NAME = {"bg": "Български", "en": "English", "de": "Deutsch", "es": "Español", "fr": "Français", "it": "Italiano", "pl": "Polski", "nl": "Nederlands", "ro": "Română", "el": "Ελληνικά", "ru": "Русский", "uk": "Українська", "tr": "Türkçe", "sr": "Srpski"}
+ORDER = list(LANG_NAME)
+PREFIX = {l: ("" if l == "de" else l + "/") for l in LANGS}
 
 T = {
  "de": {
@@ -131,6 +133,8 @@ T = {
  },
 }
 
+T.update(T_EXTRA)
+
 CSS = """:root{--bg:#fbf7ef;--paper:#fff;--ink:#1d2433;--mut:#5d6575;--line:#e8e1d3;--brand:#24508f;--ac:#2f63b0;--sun:#f2b632;--tint:#eef3fb;
 --body:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",Arial,sans-serif}
 @media (prefers-color-scheme:dark){:root{--bg:#121722;--paper:#1a2130;--ink:#eef1f7;--mut:#a3acbd;--line:#2a3344;--brand:#9bbcf0;--ac:#8fb3ef;--tint:#1e2a40;color-scheme:dark}}
@@ -141,10 +145,13 @@ a{color:var(--ac)}img{max-width:100%;display:block}
 header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px}
 .brand{white-space:nowrap;font-weight:900;font-size:20px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
 .brand span{color:var(--sun)}
-nav.lang{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-@media (max-width:480px){nav.lang a{padding:3px 8px;font-size:13px}}
-nav.lang a{font-size:14px;text-decoration:none;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:4px 11px;background:var(--paper)}
-nav.lang a[aria-current]{color:var(--brand);border-color:var(--brand);font-weight:700}
+details.lang{position:relative}
+details.lang summary{list-style:none;cursor:pointer;font-size:15px;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--paper)}
+details.lang summary::-webkit-details-marker{display:none}
+details.lang div{position:absolute;right:0;top:calc(100% + 6px);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;display:grid;grid-template-columns:1fr 1fr;width:max-content;max-width:calc(100vw - 36px);z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+details.lang a{padding:7px 12px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:15px}
+details.lang a[aria-current]{color:var(--brand);font-weight:700}
+details.lang a:hover{background:var(--tint)}
 .eyebrow{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ac)}
 h1{font-size:clamp(34px,6vw,58px);line-height:1.05;font-weight:900;letter-spacing:-.02em;margin:10px 0 16px;text-wrap:balance}
 h2{font-size:clamp(24px,3.4vw,32px);line-height:1.2;margin:0 0 20px;text-wrap:balance}
@@ -184,7 +191,7 @@ def page(lang, path, title, desc, body):
     depth = (PREFIX[lang] + path).count("/")
     up = "../" * depth
     alts = "".join(f'<link rel="alternate" hreflang="{l}" href="{DOMAIN}/{PREFIX[l]}{path}">' for l in LANGS)
-    langs = "".join(f'<a href="{up}{PREFIX[l]}{path}" lang="{l}" hreflang="{l}"{" aria-current=\"page\"" if l == lang else ""}>{LANG_NAME[l]}</a>' for l in LANGS)
+    langs = "".join(f'<a href="{up}{PREFIX[l]}{path}" lang="{l}" hreflang="{l}"{" aria-current=\"page\"" if l == lang else ""}>{LANG_NAME[l]}</a>' for l in ORDER)
     icon = "stiege-192.png" if path.startswith("stiege") else "stiege-192.png"
     return f"""<!doctype html>
 <html lang="{lang}">
@@ -203,7 +210,7 @@ def page(lang, path, title, desc, body):
 </head>
 <body>
 <div class="w">
-<header><a class="brand" href="{up}{PREFIX[lang]}">Uplift in Life<span>.</span></a><nav class="lang">{langs}</nav></header>
+<header><a class="brand" href="{up}{PREFIX[lang]}">Uplift in Life<span>.</span></a><details class="lang"><summary>🌐 {LANG_NAME[lang]} ▾</summary><div>{langs}</div></details></header>
 {body}
 <footer><div>© 2026 Uplift in Life · Wien</div><div><a href="{up}{PREFIX[lang]}">{t['home']}</a> · <a href="{up}{PREFIX[lang]}stiege/">Stiege</a> · <a href="https://macrolia.app/">Macrolia</a> · <a href="{up}{PREFIX[lang]}impressum/">{t['imprint']}</a></div></footer>
 </div>
