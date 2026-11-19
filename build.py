@@ -5,7 +5,7 @@ Run `python3 build.py`; it writes HTML into docs/ (served by GitHub Pages).
 Languages: de (root), en, bg. Texts live in T below.
 """
 import html, os
-from texts_i18n import T_EXTRA
+from texts_i18n import T_EXTRA, FORMAL
 
 DOMAIN = "https://upliftinlife.com"
 LANGS = ["de", "en", "bg", "es", "fr", "it", "pl", "nl", "ro", "el", "ru", "uk", "tr", "sr"]
@@ -134,6 +134,7 @@ T = {
 }
 
 T.update(T_EXTRA)
+for _l, _o in FORMAL.items(): T[_l].update(_o)
 
 CSS = """:root{--bg:#fbf7ef;--paper:#fff;--ink:#1d2433;--mut:#5d6575;--line:#e8e1d3;--brand:#24508f;--ac:#2f63b0;--sun:#f2b632;--tint:#eef3fb;
 --body:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",Arial,sans-serif}
